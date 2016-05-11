@@ -122,9 +122,10 @@ def pause():
 
 
 def run():
+	global driver
 	login()
 	scrape_tournament()
-	pause()	
+	driver.close()
 
 run()
 
