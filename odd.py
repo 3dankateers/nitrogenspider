@@ -1,7 +1,7 @@
 ## Model for odd
 ## odds: id, team1, team2, match_date, ML_T1, ML_T2, date_scraped
 
-from db_client import DbClient
+import db_client
 
 
 class Odd:
@@ -16,7 +16,7 @@ class Odd:
 	
 	##constructor from Cursor
 	@classmethod
-	fromCursor(cls, c):
+	def fromCursor(cls, c):
 		assert (len(c) == 1), "Error constructing Odd model from cursor. Cursor is empty or contains multiple objects"
 		id = c[0]["_id"]
 		team1 = c[0]["team1"]

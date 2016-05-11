@@ -8,7 +8,7 @@
 
 ##TODO rename match to odds or something better
 
-from odd import Odd
+import odd
 
 
 class DbClient:
@@ -48,7 +48,7 @@ class DbClient:
 			"ML_T1" : o.ML_T1,
 			"ML_T2" : o.ML_T2,
 			"date_scraped" : o.date_scraped}
-			})
+			)
 
 	## return cursor to odd found based on id
 	def get_odd(self, id):

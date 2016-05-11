@@ -5,6 +5,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+from odd import Odd
+from db_client import DbClient
+
 driver = webdriver.Chrome()
 def login():
 	global driver
@@ -24,20 +27,66 @@ def scrape():
 	league_events = get_events()
 
 	if league_events != None:
-		print league_events
-		print str(len(league_events))
+		for e in league_events:
+			parse_event(e)
 
 def get_events():
 	global driver
+	##TODO find better solution than sleep 
+	time.sleep(5)
 	try:
 		league_events = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "event")))
+		print "Found ", str(len(league_events)), " events"
 		return league_events
 	except:
 		print "no events found"
 
-def parse_events(e):
+def parse_event(e):
 	try:
-		e.
+		team1 = get_team(e, team = 0)
+		team2 = get_team(e, team = 1)
+		ML_T1 = get_ml(e, team = 0)
+		ML_T2 = get_ml(e, team = 1)
+		##print_team(e)
+
+		match_date = get_date(e)
+		print "team1: ", ML_T1
+		print "team2: ", ML_T2
+	except:
+		print "Invalid Event"
+		pass
+
+
+def get_team(e, team = 0):
+	try:
+		teams = WebDriverWait(e, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "event-participant")))
+		assert len(teams) == 2, "2 Teams not found"
+		return teams[team].text.split("\n")[0]
+	except:
+		raise Exception("Invalid Event")
+		print "event-participant (teams) not found"
+
+def get_ml(e, team = 0):
+	try:
+		mls = WebDriverWait(e, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "event-odds")))
+		assert len(mls) == 2, "2 MLs not found"
+		return mls[team].text
+	except:
+		raise Exception("Invalid Event")
+		print "selectboxit-text (MLs) not found"
+
+def get_date(e):
+	try:
+		date = e.find_element_by_class_name("event-time-text")
+		return date.text
+	except:
+		raise Exception("Invalid Event")
+
+def print_team(e):
+	try:
+		team = e.find_element_by_class_name("event-participants")
+	except:
+		raise Exception("Invalid Event")
 
 
 def pause():
