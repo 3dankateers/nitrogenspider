@@ -1,41 +1,37 @@
 ## Model for odd
-## odds: id, team1, team2, match_date, ML_T1, ML_T2, date_scraped
+## odds: id, match_id, ML_T1, ML_T2, date_scraped
 
-import db_client
-
+from db_client import DbClient
+import time
 
 class Odd:
-	def __init__(self, id, team1, team2, match_date, ML_T1, ML_T2, date_scraped):
+	def __init__(self, match_id, ML_T1, ML_T2, date_scraped, id = None):
 		self.id = id
-		self.team1 = team1
-		self.team2 = team2
-		self.match_date = match_date
+		self.match_id = match_id
 		self.ML_T1 = ML_T1
 		self.ML_T2 = ML_T2
-		self.date_scraped = date_scraped
+		self.date_scraped = time.time()
 	
 	##constructor from Cursor
 	@classmethod
-	def fromCursor(cls, c):
-		assert (len(c) == 1), "Error constructing Odd model from cursor. Cursor is empty or contains multiple objects"
+	def from_cursor(cls, c):
+		assert (c.count() == 1), "Error constructing Odd model from cursor. Cursor is empty or contains multiple objects"
 		id = c[0]["_id"]
-		team1 = c[0]["team1"]
-		team2 = c[0]["team2"]
-		match_date = c[0]["match-date"]
+		match_id = c[0]["match_id"]
 		ML_T1 = c[0]["ML_T1"]
 		ML_T2 = c[0]["ML_T2"]
 		date_scraped = c[0]["date_scraped"]
-		return cls(id, team1, team2, match_date, ML_T1, ML_T2, date_scraped)
+		return cls(match_id, ML_T1, ML_T2, date_scraped, id)
 
 	def save(self):
-		with db_client as DbClient:
+		with DbClient() as db_client:
 			cursor = db_client.get_odd(id)
 			##if found already in db
-			if cursor.count() == 1:
+			if self.id != None:
 				db_client.update_odd(self)					
 			## else it's a new odd that needs to be created
 			else:
-				db_client.create_odd(self)
+				self.id = db_client.create_odd(self.match_id, self.ML_T1, self.ML_T2, self.date_scraped)
 
 			
 
