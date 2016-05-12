@@ -10,7 +10,6 @@ from tournament import Tournament
 from match import Match
 from odd import Odd
 
-from db_client import DbClient
 
 driver = webdriver.Chrome()
 def login():

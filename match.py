@@ -26,10 +26,11 @@ class Match:
 	def find_match(cls, tournament_id, team1, team2, match_date):
 		with DbClient() as db_client:
 			cursor = db_client.find_match(team1,team2, match_date)
-			if cursor.count() == 0:
-				return cls(tournament_id, team1, team2, match_date)
-			else:
-				return cls.from_cursor(cursor)
+		
+		if cursor.count() == 0:
+			return cls(tournament_id, team1, team2, match_date)
+		else:
+			return cls.from_cursor(cursor)
 
 
 	def save(self):
@@ -37,7 +38,7 @@ class Match:
 			##if found already in db
 			if self.id != None:
 				##print "old"
-				db_client.update_match(self)
+				db_client.update_match(self.id, self.tournament_id, self.team1, self.team2, self.match_date)
 			## else it's a new odd that needs to be created
 			else:
 				##print "new"

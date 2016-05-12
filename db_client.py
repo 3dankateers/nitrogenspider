@@ -14,7 +14,7 @@ class DbClient:
 
 	def __init__(self):
 		self.client = MongoClient("mongodb://54.191.167.105:27017")
-		self.db = self.client.nirogen
+		self.db = self.client.nitrogen
 		self.db.authenticate(self.MONGO_USERNAME, self.MONGO_PASSWORD, source='admin')
 	
 	def __enter__(self):
@@ -28,19 +28,17 @@ class DbClient:
 		record = self.db.tournaments.insert_one({
 			"name" : name}
 			)
-		return record
+		return record.inserted_id
 	
 	## create new match based on model passed in
 	def create_match(self, tournament_id, team1, team2, match_date):
-		print tournament_id, team1, team2, match_date
 		record = self.db.matches.insert_one({
 			"tournament_id" : tournament_id,
 			"team1" : team1,
 			"team2" : team2,
 			"match_date" : match_date}
 			)
-		print "new record: ", record
-		return record
+		return record.inserted_id
 	
 	## create new odd based on odd passed in
 	def create_odd(self, match_id, ML_T1, ML_T2, date_scraped):
@@ -50,36 +48,36 @@ class DbClient:
 			"ML_T2" : ML_T2,
 			"date_scraped" : date_scraped}
 			)
-		return record
+		return record.inserted_id
 	
 	## update existing tournament with new values passed in
-	def update_tournament(self, r):
+	def update_tournament(self, id, name):
 		self.db.tournaments.update_one(
-				{"_id" : r.id},{
+				{"_id" : id},{
 					"$set": {
-						"name" : r.name}
+						"name" : name}
 				})
 	
 	## update existing match with new values passed in
-	def update_match(self, r):
+	def update_match(self, id, tournament_id, team1, team2, match_date):
 		self.db.matches.update_one(
-				{"_id" : r.id},{
+				{"_id" : id},{
 					"$set": {
-						"tournament_id" : r.tournament_id,
-						"team1" : r.team1,
-						"team2" : r.team2,
-						"match_date" : r.match_date}
+						"tournament_id" : tournament_id,
+						"team1" : team1,
+						"team2" : team2,
+						"match_date" : match_date}
 				})
 				
 	## update existing odd with new values from odd passed in
-	def update_odd(self, r):
+	def update_odd(self, id, match_id, ML_T1, ML_T2, date_scraped):
 		self.db.odds.update_one(
-				{"_id" : r.id},{
+				{"_id" : id},{
 					"$set": {
-						"match_id" : r.match_id,
-						"ML_T1" : r.ML_T1,
-						"ML_T2" : r.ML_T2,
-						"date_scraped" : r.date_scraped}
+						"match_id" : match_id,
+						"ML_T1" : ML_T1,
+						"ML_T2" : ML_T2,
+						"date_scraped" : date_scraped}
 				})
 
 

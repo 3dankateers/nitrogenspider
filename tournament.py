@@ -30,7 +30,7 @@ class Tournament:
 		with DbClient() as db_client:
 			##if found already in db
 			if self.id != None:
-				db_client.update_tournament(self)					
+				db_client.update_tournament(self.id, self.name)					
 			## else it's a new odd that needs to be created
 			else:
 				self.id = db_client.create_tournament(self.name)

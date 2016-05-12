@@ -25,14 +25,12 @@ class Odd:
 		return cls(match_id, ML_T1, ML_T2, date_scraped, id)
 
 	def save(self):
-		with DbClient() as db_client:
+		with DbClient() as db_client:	
 			##if found already in db
 			if self.id != None:
-				db_client.update_odd(self)					
+				db_client.update_odd(self.id, self.match_id, self.ML_T1, self.ML_T1, self.date_scraped)					
 			## else it's a new odd that needs to be created
 			else:
+				print self.match_id
 				self.id = db_client.create_odd(self.match_id, self.ML_T1, self.ML_T2, self.date_scraped)
-
-			
-
 
