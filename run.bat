@@ -1,1 +1,1 @@
-python scrape.py
+python C:\Users\andrei\dev\nitrogen\scrape.py

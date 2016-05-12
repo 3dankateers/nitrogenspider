@@ -3,6 +3,7 @@
 
 from db_client import DbClient
 import time
+import datetime
 
 class Odd:
 	def __init__(self, match_id, ML_T1, ML_T2, date_scraped, id = None):
@@ -10,7 +11,7 @@ class Odd:
 		self.match_id = match_id
 		self.ML_T1 = ML_T1
 		self.ML_T2 = ML_T2
-		self.date_scraped = time.time()
+		self.date_scraped = date_scraped
 	
 	##constructor from Cursor
 	@classmethod
@@ -25,7 +26,6 @@ class Odd:
 
 	def save(self):
 		with DbClient() as db_client:
-			cursor = db_client.get_odd(id)
 			##if found already in db
 			if self.id != None:
 				db_client.update_odd(self)					

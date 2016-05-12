@@ -32,12 +32,14 @@ class DbClient:
 	
 	## create new match based on model passed in
 	def create_match(self, tournament_id, team1, team2, match_date):
+		print tournament_id, team1, team2, match_date
 		record = self.db.matches.insert_one({
 			"tournament_id" : tournament_id,
 			"team1" : team1,
 			"team2" : team2,
 			"match_date" : match_date}
 			)
+		print "new record: ", record
 		return record
 	
 	## create new odd based on odd passed in

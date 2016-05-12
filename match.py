@@ -34,11 +34,12 @@ class Match:
 
 	def save(self):
 		with DbClient() as db_client:
-			cursor = db_client.get_match(id)
 			##if found already in db
 			if self.id != None:
-				db_client.update_match(self)					
+				##print "old"
+				db_client.update_match(self)
 			## else it's a new odd that needs to be created
 			else:
+				##print "new"
 				self.id = db_client.create_match(self.tournament_id, self.team1, self.team2, self.match_date)
 

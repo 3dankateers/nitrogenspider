@@ -1,4 +1,5 @@
 import time
+import datetime
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -58,15 +59,13 @@ class EventException(Exception):
 
 def parse_event(e, t_id):
 	try:
-		team1 = get_team(e, team = 0)
-		team2 = get_team(e, team = 1)
+		team1 = str(get_team(e, team = 0))
+		team2 = str(get_team(e, team = 1))
 		match_date = str(get_date(e))
-		ML_T1 = get_ml(e, team = 0)
-		ML_T2 = get_ml(e, team = 1)
-		scrape_date = time.time()
-		print match_date
+		ML_T1 = str(get_ml(e, team = 0))
+		ML_T2 = str(get_ml(e, team = 1))
+		scrape_date = datetime.datetime.utcnow()
 		
-		match = None
 		match = Match.find_match(t_id, team1, team2, match_date)
 		match.save()
 		odd = Odd(match.id, ML_T1, ML_T2, scrape_date)
