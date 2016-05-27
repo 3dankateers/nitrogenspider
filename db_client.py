@@ -9,13 +9,10 @@
 from pymongo import MongoClient
 
 class DbClient:
-	MONGO_USERNAME = 'root'
-	MONGO_PASSWORD = 'm6E7K1GLwcz58q'
 
 	def __init__(self):
-		self.client = MongoClient("mongodb://54.191.167.105:27017")
+		self.client = MongoClient("mongodb://localhost:27017/")
 		self.db = self.client.nitrogen
-		self.db.authenticate(self.MONGO_USERNAME, self.MONGO_PASSWORD, source='admin')
 	
 	def __enter__(self):
 		return self

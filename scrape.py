@@ -18,19 +18,19 @@ def login():
 	##assert "Python" in driver.title
 	##login_button = driver.find_element_by_id("modal-welcome")
 	try:
-		login_button = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "modal-welcome-new-button")))
+		login_button = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, "modal-welcome-new-button")))
 		login_button.click()
 		print "Logged in"
 	except:
 		print "login button not found"
 
-def scrape_tournament():
+def scrape_tournament(t_name):
 	global driver
 	##TODO generalize this for all tournaments
 	##go to specific page for now
-	driver.get("https://nitrogensports.eu/sport/esports/league-of-legends-mid-season-invitational")
+	driver.get("https://nitrogensports.eu/sport/esports/" + t_name)
 	##TODO find better solution than sleep 
-	time.sleep(5)
+	##time.sleep(10)
 	
 	name = get_tournament_name()
 	print name
@@ -122,7 +122,8 @@ def pause():
 def run():
 	global driver
 	login()
-	scrape_tournament()
+	scrape_tournament("league-of-legends-champions-korea")
+	scrape_tournament("league-of-legends-tencent-lol-pro-league")
 	driver.close()
 
 run()
