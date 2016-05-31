@@ -1,5 +1,6 @@
 import time
 import datetime
+import sys
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -9,28 +10,14 @@ from selenium.webdriver.support import expected_conditions as EC
 from tournament import Tournament
 from match import Match
 from odd import Odd
+from driver import Driver
 
-
-driver = webdriver.Chrome()
-def login():
-	global driver
-	driver.get("https://nitrogensports.eu")
-	##assert "Python" in driver.title
-	##login_button = driver.find_element_by_id("modal-welcome")
-	try:
-		login_button = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, "modal-welcome-new-button")))
-		login_button.click()
-		print "Logged in"
-	except:
-		print "login button not found"
 
 def scrape_tournament(t_name):
-	global driver
-	##TODO generalize this for all tournaments
-	##go to specific page for now
+	driver = Driver.get_instance()
 	driver.get("https://nitrogensports.eu/sport/esports/" + t_name)
 	##TODO find better solution than sleep 
-	##time.sleep(10)
+	time.sleep(10)
 	
 	name = get_tournament_name()
 	print name
@@ -45,7 +32,7 @@ def scrape_tournament(t_name):
 			parse_event(e, t.id)
 
 def get_events():
-	global driver
+	driver = Driver.get_instance()
 	try:
 		league_events = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "event")))
 		print "Found ", str(len(league_events)), " events"
@@ -74,13 +61,12 @@ def parse_event(e, t_id):
 		print "Invalid Event"
 
 def get_tournament_name():
-	global driver
+	driver = Driver.get_instance()
 	try:
 		page = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "page-find-games")))
 		title = WebDriverWait(page, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "page-title")))
 		return title.text
 	except:
-		print "wtf"
 		raise EventException("Invalid Page(No Title)")
 
 def get_team(e, team = 0):
@@ -119,12 +105,10 @@ def pause():
 	time.sleep(10)
 
 
-def run():
-	global driver
-	login()
-	scrape_tournament("league-of-legends-champions-korea")
-	scrape_tournament("league-of-legends-tencent-lol-pro-league")
-	driver.close()
+def run(tournament_name):
+	Driver.login()
+	scrape_tournament(tournament_name)
 
-run()
+tournament_name = sys.argv[1]
+run(tournament_name)
 
