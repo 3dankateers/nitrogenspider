@@ -33,8 +33,10 @@ def scrape_tournament(t_name):
 
 def get_events():
 	driver = Driver.get_instance()
+	##driver.save_screenshot('screen1.png')
 	try:
-		league_events = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "event")))
+		league_events = WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "event")))
+		
 		print "Found ", str(len(league_events)), " events"
 		return league_events
 	except:
@@ -107,7 +109,12 @@ def pause():
 
 def run(tournament_name):
 	Driver.login()
+	print "sleeping"
+	time.sleep(20)
+	##Driver.driver.save_screenshot('screen2.png')
+	##print "took screenshot"
 	scrape_tournament(tournament_name)
+	Driver.logout()
 
 tournament_name = sys.argv[1]
 run(tournament_name)

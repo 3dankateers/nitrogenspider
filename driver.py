@@ -4,6 +4,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from pyvirtualdisplay import Display
 
 class Driver:
 	driver = None 
@@ -11,7 +12,9 @@ class Driver:
 	@staticmethod
 	def get_instance():
 		if Driver.driver == None:
-			Driver.driver = webdriver.Chrome()
+			Driver.display = Display(visible=0, size=(1280, 1024))
+			Driver.display.start()
+			Driver.driver = webdriver.Firefox()
 		return Driver.driver
 	
 	@staticmethod
@@ -34,8 +37,9 @@ class Driver:
 	
 	@staticmethod
 	def logout():
-		driver = Driver.get_nstance()
-		driver.close()
+		Driver.display.stop()
+		##driver = Driver.get_instance()
+		##driver.close()
 	
 	@staticmethod
 	def wait_until(somepredicate, timeout, period=0.25):
