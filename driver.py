@@ -40,6 +40,7 @@ class Driver:
 		Driver.display.stop()
 		##driver = Driver.get_instance()
 		##driver.close()
+		##river.display.start()
 	
 	@staticmethod
 	def wait_until(somepredicate, timeout, period=0.25):

@@ -8,9 +8,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from tournament import Tournament
-from match import Match
+from pro_match import ProMatch
 from odd import Odd
 from driver import Driver
+from helper import parse_date
 
 
 def scrape_tournament(t_name):
@@ -50,11 +51,14 @@ def parse_event(e, t_id):
 		team1 = str(get_team(e, team = 0))
 		team2 = str(get_team(e, team = 1))
 		match_date = str(get_date(e))
+
+		match_day = str(parse_date(match_date))
+
 		ML_T1 = str(get_ml(e, team = 0))
 		ML_T2 = str(get_ml(e, team = 1))
 		scrape_date = datetime.datetime.utcnow()
 		
-		match = Match.find_match(t_id, team1, team2, match_date)
+		match = ProMatch.find_match(t_id, team1, team2, match_date, match_day)
 		match.save()
 		odd = Odd(match.id, ML_T1, ML_T2, scrape_date)
 		odd.save()
@@ -109,7 +113,6 @@ def pause():
 
 def run(tournament_name):
 	Driver.login()
-	print "sleeping"
 	time.sleep(20)
 	##Driver.driver.save_screenshot('screen2.png')
 	##print "took screenshot"
