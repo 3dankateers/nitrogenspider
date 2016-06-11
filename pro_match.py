@@ -7,9 +7,9 @@ from nitrogen_db_client import NitrogenDbClient
 class ProMatch:
 
 	##Required on creation: 												team1_name, team2_name, map_number, match_day
-	##Possibly populated later by csv file: 				champs1, champs2, win, first_blood, kills_5
-	##Possibly populated later by nitrogen scraper: tournament_id, match_date
-	## set programmatically: 												id, is_test, status
+	##Possibly populated later by csv file: 				champs1, champs2, win, first_blood, kills_5, status
+	##Possibly populated later by nitrogen scraper: tournament_id, match_date, status
+	## set programmatically: 												id, is_test
 
 	def __init__(self, team1_name, team2_name, map_number, match_day, champs1 = None, champs2 = None, win = None, match_date = None, is_test = True, tournament_id = None, first_blood = None, kills_5 = None, status = None, id = None):
 		self.id = id
@@ -109,6 +109,24 @@ class ProMatch:
 		cursor = NitrogenDbClient.get_db().matches.find({"team1_name" : team1_name, "team2_name" : team2_name, "map_number" : map_number, "match_day" : match_day})
 		return cursor
 
+
+	## return all matches not marked as is_test
+	@staticmethod
+	def get_training_set():
+		cursor = NitrogenDbClient.get_db().pro_matches.find({"is_test" : False})
+		return cursor
+
+	## return all matches that are labeled is_test
+	@staticmethod
+	def get_test_set():
+		cursor = NitrogenDbClient.get_db().pro_matches.find({"is_test" : True})
+		return cursor
+
+	## return all matches
+	@staticmethod
+	def get_all_matches():
+		cursor = NitrogenDbClient.get_db().league.pro_matches.find()
+		return cursor
 
 	def save(self):
 		##if found already in db
