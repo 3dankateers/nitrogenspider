@@ -111,6 +111,24 @@ class ProMatch:
 		return cursor
 
 
+	## return all matches not marked as is_test
+	@staticmethod
+	def get_training_set():
+		cursor = NitrogenDbClient.get_db().pro_matches.find({"is_test" : False})
+		return cursor
+
+	## return all matches that are labeled is_test
+	@staticmethod
+	def get_test_set():
+		cursor = NitrogenDbClient.get_db().pro_matches.find({"is_test" : True})
+		return cursor
+
+	## return all matches
+	@staticmethod
+	def get_all_matches():
+		cursor = NitrogenDbClient.get_db().league.pro_matches.find()
+		return cursor
+
 	def save(self):
 		##if found already in db
 		if self.id != None:
