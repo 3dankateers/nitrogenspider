@@ -55,7 +55,7 @@ def parse_event(e, t_id):
 
 		match_date = str(get_date(e))
 		match_day = str(parse_date(match_date))
-		map_number = parse_map_number(team1_map_number)
+		map_number = parse_map_number(team1_and_map)
 		
 
 		ML_T1 = str(get_ml(e, team = 0))
