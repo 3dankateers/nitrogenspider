@@ -6,10 +6,10 @@ from nitrogen_db_client import NitrogenDbClient
 
 class ProMatch:
 
-	##Required on creation: 												team1_name, team2_name, map_number, match_day
-	##Possibly populated later by csv file: 				champs1, champs2, win, first_blood, kills_5
+	##Required on creation:							team1_name, team2_name, map_number, match_day
+	##Possibly populated later by csv file:			champs1, champs2, win, first_blood, kills_5
 	##Possibly populated later by nitrogen scraper: tournament_id, match_date
-	## set programmatically: 												id, is_test, status
+	## set programmatically:						id, is_test, status
 
 	def __init__(self, team1_name, team2_name, map_number, match_day, champs1 = None, champs2 = None, win = None, match_date = None, is_test = True, tournament_id = None, first_blood = None, kills_5 = None, status = None, id = None):
 		self.id = id
@@ -73,14 +73,14 @@ class ProMatch:
 			"tournament_id" : self.tournament_id,
 			"first_blood" : self.first_blood,
 			"kills_5" : self.kills_5,
-			"status" :self.status
+			"status" : self.status
 			})
 		return record.inserted_id
 	
 	## update existing match with new values in model
 	def update_match(self):
 		NitrogenDbClient.get_db().matches.update_one(
-				{"_id" : id},{
+				{"_id" : self.id},{
 					"$set": {
 						"team1_name" : self.team1_name,
 						"team2_name" : self.team2_name,
@@ -94,7 +94,8 @@ class ProMatch:
 						"tournament_id" : self.tournament_id,
 						"first_blood" : self.first_blood,
 						"kills_5" : self.kills_5,
-						"status" : self.status}
+						"status" : self.status 
+						}
 				})
 
 	## return cursor to match found based on id

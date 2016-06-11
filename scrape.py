@@ -69,6 +69,7 @@ def parse_event(e, t_id):
 			match.status = "nitrogen"
 		elif match.status == "csv":
 			match.status = "both"
+		
 		match.tournament_id = t_id
 		match.match_date = match_date
 		match.save()
