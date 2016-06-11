@@ -40,3 +40,13 @@ def parse_map_number(team_map_str):
 	return int(team_map_str[map_location + 4])
 
 
+## takes in ML in format: ML 1.879 (-114) 
+## returns integer -114
+def parse_ML(ML_str):
+	if ML_str.find("(") > 0:
+		cut_one = ML_str.split("(")[1]
+		return int(cut_one.split(")")[0])
+	else: 
+		return ML_str
+
+

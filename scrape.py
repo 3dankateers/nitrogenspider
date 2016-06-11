@@ -11,7 +11,7 @@ from tournament import Tournament
 from pro_match import ProMatch
 from odd import Odd
 from driver import Driver
-from helper import parse_date, parse_map_number, parse_team_name
+from helper import parse_date, parse_map_number, parse_team_name, parse_ML
 
 
 def scrape_tournament(t_name):
@@ -58,11 +58,11 @@ def parse_event(e, t_id):
 		map_number = parse_map_number(team1_and_map)
 		
 
-		ML_T1 = str(get_ml(e, team = 0))
-		ML_T2 = str(get_ml(e, team = 1))
+		ML_T1 = parse_ML(str(get_ml(e, team = 0)))
+		ML_T2 = parse_ML(str(get_ml(e, team = 1)))
 		scrape_date = datetime.datetime.utcnow()
 		
-		match = ProMatch.find_match(team1_name, team2_name, map_number, match_day)
+		match = ProMatch.find_match(team1_name, team2_name, map_number, match_day, "nitrogen")
 
 		##update status which holds info about whether match is updated using csv/nitrogen/both
 		if match.status == None:

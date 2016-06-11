@@ -4,6 +4,8 @@
 from nitrogen_db_client import NitrogenDbClient
 import time
 import datetime
+import pymongo
+from helper import parse_ML
 
 class Odd:
 	def __init__(self, match_id, ML_T1, ML_T2, date_scraped, id = None):
@@ -15,13 +17,12 @@ class Odd:
 	
 	##constructor from Cursor
 	@classmethod
-	def from_cursor(cls, c):
-		assert (c.count() == 1), "Error constructing Odd model from cursor. Cursor is empty or contains multiple objects"
-		id = c[0]["_id"]
-		match_id = c[0]["match_id"]
-		ML_T1 = c[0]["ML_T1"]
-		ML_T2 = c[0]["ML_T2"]
-		date_scraped = c[0]["date_scraped"]
+	def from_dict(cls, c):
+		id = c["_id"]
+		match_id = c["match_id"]
+		ML_T1 = c["ML_T1"]
+		ML_T2 = c["ML_T2"]
+		date_scraped = c["date_scraped"]
 		return cls(match_id, ML_T1, ML_T2, date_scraped, id)
 
 	def save(self):
@@ -61,4 +62,18 @@ class Odd:
 	def get_odd(id):
 		cursor = NitrogenDbClient.get_db().odds.find({"_id" : id})
 		return cursor
+
+	@staticmethod
+	def get_odds_for_match(m_id):
+		cursor = NitrogenDbClient.get_db().odds.find({"match_id" : m_id}).sort("date-scrape", pymongo.DESCENDING)
+		return cursor
+
+	@staticmethod
+	def fix_ML():
+		cursor = NitrogenDbClient.get_db().odds.find()
+		for o in cursor:
+			odd = Odd.from_dict(o)
+			odd.ML_T1 = parse_ML(odd.ML_T1)
+			odd.ML_T2 = parse_ML(odd.ML_T2)
+			odd.save()
 
