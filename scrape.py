@@ -11,7 +11,7 @@ from tournament import Tournament
 from pro_match import ProMatch
 from odd import Odd
 from driver import Driver
-from helper import parse_date
+from helper import parse_date, parse_map_number, parse_team_name
 
 
 def scrape_tournament(t_name):
@@ -48,18 +48,31 @@ class EventException(Exception):
 
 def parse_event(e, t_id):
 	try:
-		team1 = str(get_team(e, team = 0))
-		team2 = str(get_team(e, team = 1))
-		match_date = str(get_date(e))
+		team1_and_map = str(get_team(e, team = 0))
+		team2_and_map = str(get_team(e, team = 1))
+		team1_name = parse_team_name(team1_and_map)
+		team2_name = parse_team_name(team2_and_map)
 
+		match_date = str(get_date(e))
 		match_day = str(parse_date(match_date))
+		map_number = parse_map_number(team1_map_number)
+		
 
 		ML_T1 = str(get_ml(e, team = 0))
 		ML_T2 = str(get_ml(e, team = 1))
 		scrape_date = datetime.datetime.utcnow()
 		
-		match = ProMatch.find_match(t_id, team1, team2, match_date, match_day)
+		match = ProMatch.find_match(team1_name, team2_name, map_number, match_day)
+
+		##update status which holds info about whether match is updated using csv/nitrogen/both
+		if match.status == None:
+			match.status = "nitrogen"
+		elif match.status == "csv":
+			match.status = "both"
+		match.tournament_id = t_id
+		match.match_date = match_date
 		match.save()
+
 		odd = Odd(match.id, ML_T1, ML_T2, scrape_date)
 		odd.save()
 

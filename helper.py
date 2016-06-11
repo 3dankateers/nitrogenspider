@@ -28,3 +28,16 @@ def parse_date(date_string):
 	year = int(year_time.split(" ")[1])
 	return datetime.date(year, month, day)
 
+## takes in team name and map # in format: Immortals (map 3)
+## returns team name  in format : Immortals
+def parse_team_name(team_map_str):
+	return team_map_str.split("(")[0]
+
+## takes in team name and map # in format: Immortals (map 3)
+##returns map number: 3
+def parse_map_number(team_map_str):
+	map_location = team_map_str.find("map")
+	print team_map_str[map_location + 4]
+	return int(team_map_str[map_location + 4])
+
+
