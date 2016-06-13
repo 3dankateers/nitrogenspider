@@ -37,9 +37,9 @@ class Driver:
 	
 	@staticmethod
 	def logout():
+		Driver.driver.quit()
 		Driver.display.stop()
 		##driver = Driver.get_instance()
-		##driver.close()
 		##river.display.start()
 	
 	@staticmethod
