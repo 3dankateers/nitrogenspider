@@ -125,6 +125,22 @@ class ProMatch:
 						}
 				})
 
+	## set is_test = true, for all pro matches that have csv data
+	@staticmethod
+	def reset_all_tests():
+		NitrogenDbClient.get_db().matches.update_many(
+				{"status" : "csv"},{
+					"$set": {
+						"is_test" : True 
+						}
+				})
+		NitrogenDbClient.get_db().matches.update_many(
+				{"status" : "both"},{
+					"$set": {
+						"is_test" : True 
+						}
+				})
+
 	## return cursor to match found based on id
 	@staticmethod
 	def get_match(id):
@@ -140,7 +156,8 @@ class ProMatch:
 
 	## return all matches not marked as is_test
 	@staticmethod
-	def get_training_set():
+	def get_training_set(premade_only):
+		##not using premade only right now but have it to have same arguments for match and promatch
 		cursor = NitrogenDbClient.get_db().matches.find({"$or":[ {"status" : "both", "is_test" : False}, {"status" : "csv", "is_test" : False }]})
 		return cursor
 
@@ -166,6 +183,21 @@ class ProMatch:
 		cursor = NitrogenDbClient.get_db().matches.find({"status" : "both"})
 		return cursor
 		
+	@staticmethod
+	def get_by_status(status):
+		cursor = NitrogenDbClient.get_db().matches.find({"status" : status})
+		return cursor
+
+	## passed in status, prints basic informatin about pro matches
+	@staticmethod
+	def print_by_status(status):
+		cursor = ProMatch.get_by_status(status)
+		for d in cursor:
+			match = ProMatch.from_dict(d)
+			match.pprint()
+
+	def pprint(self):
+		print self.team1_name, self.team2_name, self.match_day, self.map_number, self.status 
 
 	## return all matches
 	@staticmethod
