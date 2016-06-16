@@ -4,7 +4,7 @@
 
 from nitrogen_db_client import NitrogenDbClient
 from odd import Odd
-
+from tournament import Tournament
 
 class ProMatch:
 
@@ -192,6 +192,21 @@ class ProMatch:
 	@staticmethod
 	def print_by_status(status):
 		cursor = ProMatch.get_by_status(status)
+		for d in cursor:
+			match = ProMatch.from_dict(d)
+			match.pprint()
+	
+	##passed in status and a string from tourny required
+	@staticmethod
+	def print_by_status_tournament(status, tournament_string):
+		cursor = Tournament.get_all()
+		t_id_requested = 0
+		for d in cursor:
+			tournament = Tournament.from_dict(d)
+			if tournament_string in tournament.name:
+				t_id_requested = tournament.id
+				break
+		cursor = NitrogenDbClient.get_db().matches.find({"status" : status, "tournament_id" : t_id_requested})
 		for d in cursor:
 			match = ProMatch.from_dict(d)
 			match.pprint()

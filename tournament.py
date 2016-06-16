@@ -8,12 +8,11 @@ class Tournament:
 		self.id = id 
 		self.name = name
 	
-	##constructor from Cursor
+	##constructor from dict
 	@classmethod
-	def from_cursor(cls, c):
-		assert (c.count() == 1), "Error constructing Tournament model from cursor. Cursor is empty or contains multiple objects"
-		id = c[0]["_id"]
-		name = c[0]["name"]
+	def from_dict(cls, d):
+		id = d["_id"]
+		name = d["name"]
 		return cls(name, id)
 	
 	## either returns existing tournament or returns a new one
@@ -54,6 +53,12 @@ class Tournament:
 		cursor = NitrogenDbClient.get_db().tournaments.find({"_id" : id})
 		return cursor
 
+	## return cursor to tournament found based on id
+	@staticmethod
+	def get_all():
+		cursor = NitrogenDbClient.get_db().tournaments.find()
+		return cursor
+	
 	def save(self):
 		##if found already in db
 		if self.id != None:
