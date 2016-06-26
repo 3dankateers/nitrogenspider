@@ -130,19 +130,19 @@ class ProMatch:
 						}
 				})
 
-	## set is_test = true, for all pro matches that have csv data
+	## set is_test to whatever is_test value is passed in, for all pro matches that have csv data
 	@staticmethod
-	def reset_all_tests():
+	def reset_all_tests(is_test = True):
 		NitrogenDbClient.get_db().matches.update_many(
 				{"status" : "csv"},{
 					"$set": {
-						"is_test" : True 
+						"is_test" : is_test
 						}
 				})
 		NitrogenDbClient.get_db().matches.update_many(
 				{"status" : "both"},{
 					"$set": {
-						"is_test" : True 
+						"is_test" : is_test 
 						}
 				})
 
@@ -161,8 +161,7 @@ class ProMatch:
 
 	## return all matches not marked as is_test
 	@staticmethod
-	def get_training_set(premade_only):
-		##not using premade only right now but have it to have same arguments for match and promatch
+	def get_training_set():
 		cursor = NitrogenDbClient.get_db().matches.find({"$or":[ {"status" : "both", "is_test" : False}, {"status" : "csv", "is_test" : False }]})
 		return cursor
 
@@ -185,7 +184,7 @@ class ProMatch:
 
 	@staticmethod
 	def get_bettable_set():
-		cursor = NitrogenDbClient.get_db().matches.find({"status" : "both"})
+		cursor = NitrogenDbClient.get_db().matches.find({"status" : "both", "is_test" : True})
 		return cursor
 		
 	@staticmethod
