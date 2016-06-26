@@ -228,12 +228,12 @@ class ProMatch:
 	def get_latest_ML_T1(self):
 		##sorted by date when returned
 		latest_odd = self.odds[-1]
-		return latest_odd.ML_T1
+		return latest_odd["ML_T1"]
 
 	def get_latest_ML_T2(self):
 		##sorted by date when returned
 		latest_odd = self.odds[-1]
-		return latest_odd.ML_T2
+		return latest_odd["ML_T2"]
 
 	def save(self):
 		##if found already in db
