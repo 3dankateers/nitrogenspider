@@ -22,7 +22,7 @@ class Tournament:
 		if cursor.count() == 0:
 			return cls(name)
 		else:
-			return cls.from_cursor(cursor)
+			return cls.from_dict(cursor[0])
 	
 	## create new tournament based on model passed in
 	@staticmethod

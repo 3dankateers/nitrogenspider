@@ -1,5 +1,6 @@
 ## Model for match
 ## matches: id, team1_name, team2_name, map_number, match_day, champs1, champs2, win, match_date, is_test, tournament_id, first_blood, kills_5, status
+##odds (is embedded inside ProMatch)
 ## status possibilities: "nitrogen" or "csv or "both" or None
 
 from nitrogen_db_client import NitrogenDbClient
@@ -10,10 +11,10 @@ class ProMatch:
 
 	##Required on creation:							team1_name, team2_name, map_number, match_day
 	##Possibly populated later by csv file:			champs1, champs2, win, first_blood, kills_5, red_side
-	##Possibly populated later by nitrogen scraper: tournament_id, match_date
+	##Possibly populated later by nitrogen scraper: tournament_id, match_date, odds
 	## set programmatically:						id, is_test, status
 
-	def __init__(self, team1_name, team2_name, map_number, match_day, red_side = None, champs1 = None, champs2 = None, win = None, match_date = None, is_test = None, tournament_id = None, first_blood = None, kills_5 = None, status = None, id = None):
+	def __init__(self, team1_name, team2_name, map_number, match_day, red_side = None, champs1 = None, champs2 = None, win = None, match_date = None, odds = [], is_test = None, tournament_id = None, first_blood = None, kills_5 = None, status = None, id = None):
 		self.id = id
 		self.team1_name = team1_name
 		self.team2_name = team2_name
@@ -24,6 +25,7 @@ class ProMatch:
 		self.champs2 = champs2
 		self.win = win
 		self.match_date = match_date
+		self.odds = odds
 		self.is_test = is_test
 		self.tournament_id = tournament_id
 		self.first_blood = first_blood
@@ -44,12 +46,13 @@ class ProMatch:
 		champs2 = c["champs2"]
 		win = c["win"]
 		match_date = c["match_date"]
+		odds = c["odds"]
 		is_test = c["is_test"]
 		tournament_id = c["tournament_id"]
 		first_blood = c["first_blood"]
 		kills_5 = c["kills_5"]
 		status = c["status"]
-		return cls(team1_name, team2_name, map_number, match_day, red_side, champs1, champs2, win, match_date, is_test, tournament_id, first_blood, kills_5, status, id)
+		return cls(team1_name, team2_name, map_number, match_day, red_side, champs1, champs2, win, match_date, odds, is_test, tournament_id, first_blood, kills_5, status, id)
 	
 	## Uniquely defined by: team1_name, team2_name, map_number, match_day
 	## if match already exists in db return it, else create new match using required information
@@ -95,6 +98,7 @@ class ProMatch:
 			"champs2" : self.champs2,
 			"win" : self.win,
 			"match_date" : self.match_date,
+			"odds" : self.odds,
 			"is_test" : self.is_test,
 			"tournament_id" : self.tournament_id,
 			"first_blood" : self.first_blood,
@@ -117,6 +121,7 @@ class ProMatch:
 						"champs2" : self.champs2,
 						"win" : self.win,
 						"match_date" : self.match_date,
+						"odds" : self.odds,
 						"is_test" : self.is_test,
 						"tournament_id" : self.tournament_id,
 						"first_blood" : self.first_blood,
@@ -217,19 +222,17 @@ class ProMatch:
 	## return all matches
 	@staticmethod
 	def get_all_matches():
-		cursor = NitrogenDbClient.get_db().league.matches.find()
+		cursor = NitrogenDbClient.get_db().matches.find()
 		return cursor
 
 	def get_latest_ML_T1(self):
 		##sorted by date when returned
-		cursor = Odd.get_odds_for_match(self.id)
-		latest_odd = Odd.from_dict(cursor[0])
+		latest_odd = self.odds[-1]
 		return latest_odd.ML_T1
 
 	def get_latest_ML_T2(self):
 		##sorted by date when returned
-		cursor = Odd.get_odds_for_match(self.id)
-		latest_odd = Odd.from_dict(cursor[0])
+		latest_odd = self.odds[-1]
 		return latest_odd.ML_T2
 
 	def save(self):
@@ -239,7 +242,7 @@ class ProMatch:
 			if self.to_invert == True:
 				self.invert()
 			self.update_match()
-		## else it's a new odd that needs to be created
+		## else it's a new match that needs to be created
 		else:
 			##print "new"
 			self.id = self.create_match()

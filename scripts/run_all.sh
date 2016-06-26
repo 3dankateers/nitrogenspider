@@ -4,5 +4,6 @@
 ~/betting/nitrogenspider/scripts/run_LPL.sh
 ~/betting/nitrogenspider/scripts/run_LSPL.sh
 ~/betting/nitrogenspider/scripts/run_MASTER.sh
+~/betting/nitrogenspider/scripts/run_CONT.sh
 ~/betting/nitrogenspider/scripts/kill_all_ps.sh
 

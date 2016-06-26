@@ -81,8 +81,10 @@ def parse_event(e, t_id):
 		
 		##not sure why this is neccesary, weird format from scraping
 		if isinstance(ML_T1, (int, long)) and isinstance(ML_T2, (int, long)):
-			odd = Odd(match.id, ML_T1, ML_T2, scrape_date)
-			odd.save()
+			odd = {"match_id": match.id, "ML_T1" : ML_T1, "ML_T2" : ML_T2, "scrape_date" : scrape_date}	
+			match.odds.append(odd)
+			match.save()
+			print "odd inserted"
 		else:
 			print "ODD NOT SAVED ML CANNOT BE PARSED, ", ML_T1
 
