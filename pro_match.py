@@ -74,7 +74,25 @@ class ProMatch:
 			return match
 		else:
 			return cls(team1_name, team2_name, map_number, match_day)
+
+
+	@classmethod
+	def find_corrupted_match(cls, team1_name, team2_name, map_number, match_day, champs1):
+		print team1_name, team2_name, map_number, match_day
+		cursor1 = cls.lookup_corrupted_match(team1_name, team2_name, map_number, match_day, champs1)
+		if cursor1.count() == 0:
+			print "corrupted"
+			return True
+		else:
+			print "corrupted"
+			return False 
 	
+	@staticmethod
+	def lookup_corrupted_match(team1_name, team2_name, map_number, match_day, champs1):
+		cursor = NitrogenDbClient.get_db().matches.find({"team1_name" : team1_name, "team2_name" : team2_name, "map_number" : map_number, "match_day" : match_day, "champs1" : champs1})
+		return cursor
+
+
 	## check if inversion neccesary(same match but team1 and team2 are swapped)
 	def set_should_invert(self, caller):
 		## if both means inversion was done already
@@ -162,13 +180,13 @@ class ProMatch:
 	## return all matches not marked as is_test
 	@staticmethod
 	def get_training_set():
-		cursor = NitrogenDbClient.get_db().matches.find({"$or":[ {"status" : "both", "is_test" : False}, {"status" : "csv", "is_test" : False }]})
+		cursor = NitrogenDbClient.get_db().matches.find({"is_test" : False})
 		return cursor
 
 	## return all matches that are labeled is_test
 	@staticmethod
 	def get_test_set():
-		cursor = NitrogenDbClient.get_db().matches.find({"$or":[ {"status" : "both", "is_test" : True}, {"status" : "csv", "is_test" : True}]})
+		cursor = NitrogenDbClient.get_db().matches.find({"is_test" : True})
 		return cursor
 
 	##returns all matches that have csv data
@@ -182,6 +200,7 @@ class ProMatch:
 		cursor = NitrogenDbClient.get_db().matches.find({"$or":[ {"status" : "both"}, {"status" : "csv"}]})
 		return cursor
 
+	##should always be passed in either status == "both_old" or "both"
 	@staticmethod
 	def get_bettable_set():
 		cursor = NitrogenDbClient.get_db().matches.find({"status" : "both", "is_test" : True})
