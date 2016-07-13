@@ -7,6 +7,8 @@ from nitrogen_db_client import NitrogenDbClient
 from odd import Odd
 from tournament import Tournament
 
+PATCH = "6.13"
+
 class ProMatch:
 
 	##Required on creation:							team1_name, team2_name, map_number, match_day
@@ -14,7 +16,7 @@ class ProMatch:
 	##Possibly populated later by nitrogen scraper: tournament_id, match_date, odds
 	## set programmatically:						id, is_test, status
 
-	def __init__(self, team1_name, team2_name, map_number, match_day, red_side = None, champs1 = None, champs2 = None, win = None, match_date = None, odds = [], is_test = None, tournament_id = None, first_blood = None, kills_5 = None, status = None, id = None):
+	def __init__(self, team1_name, team2_name, map_number, match_day, red_side = None, champs1 = None, champs2 = None, win = None, match_date = None, odds = [], is_test = None, tournament_id = None, first_blood = None, kills_5 = None, status = None, id = None, patch = PATCH):
 		self.id = id
 		self.team1_name = team1_name
 		self.team2_name = team2_name
@@ -32,6 +34,7 @@ class ProMatch:
 		self.kills_5 = kills_5
 		self.status = status
 		self.to_invert = False
+		self.patch = patch
 	
 	##constructor from Cursor
 	@classmethod
@@ -52,7 +55,8 @@ class ProMatch:
 		first_blood = c["first_blood"]
 		kills_5 = c["kills_5"]
 		status = c["status"]
-		return cls(team1_name, team2_name, map_number, match_day, red_side, champs1, champs2, win, match_date, odds, is_test, tournament_id, first_blood, kills_5, status, id)
+		patch = c["patch"]
+		return cls(team1_name, team2_name, map_number, match_day, red_side, champs1, champs2, win, match_date, odds, is_test, tournament_id, first_blood, kills_5, status, id, patch)
 	
 	## Uniquely defined by: team1_name, team2_name, map_number, match_day
 	## if match already exists in db return it, else create new match using required information
@@ -121,7 +125,8 @@ class ProMatch:
 			"tournament_id" : self.tournament_id,
 			"first_blood" : self.first_blood,
 			"kills_5" : self.kills_5,
-			"status" : self.status
+			"status" : self.status,
+			"patch" : self.patch
 			})
 		return record.inserted_id
 	
@@ -144,7 +149,8 @@ class ProMatch:
 						"tournament_id" : self.tournament_id,
 						"first_blood" : self.first_blood,
 						"kills_5" : self.kills_5,
-						"status" : self.status 
+						"status" : self.status,
+						"patch" : self.patch
 						}
 				})
 
@@ -152,13 +158,13 @@ class ProMatch:
 	@staticmethod
 	def reset_all_tests(is_test = True):
 		NitrogenDbClient.get_db().matches.update_many(
-				{"status" : "csv"},{
+				{"status" : "csv", "patch" : PATCH},{
 					"$set": {
 						"is_test" : is_test
 						}
 				})
 		NitrogenDbClient.get_db().matches.update_many(
-				{"status" : "both"},{
+				{"status" : "both", "patch" : PATCH},{
 					"$set": {
 						"is_test" : is_test 
 						}
@@ -180,35 +186,35 @@ class ProMatch:
 	## return all matches not marked as is_test
 	@staticmethod
 	def get_training_set():
-		cursor = NitrogenDbClient.get_db().matches.find({"is_test" : False})
+		cursor = NitrogenDbClient.get_db().matches.find({"is_test" : False, "patch" : PATCH})
 		return cursor
 
 	## return all matches that are labeled is_test
 	@staticmethod
 	def get_test_set():
-		cursor = NitrogenDbClient.get_db().matches.find({"is_test" : True})
+		cursor = NitrogenDbClient.get_db().matches.find({"is_test" : True, "patch" : PATCH})
 		return cursor
 
 	##returns all matches that have csv data
 	@staticmethod
 	def get_csv_set():
-		cursor = NitrogenDbClient.get_db().matches.find({"$or":[ {"status" : "both"}, {"status" : "csv"}]})
+		cursor = NitrogenDbClient.get_db().matches.find({"$or":[ {"status" : "both"}, {"status" : "csv", "patch" : PATCH}]})
 		return cursor
 
 	@staticmethod
 	def get_testable_set():
-		cursor = NitrogenDbClient.get_db().matches.find({"$or":[ {"status" : "both"}, {"status" : "csv"}]})
+		cursor = NitrogenDbClient.get_db().matches.find({"$or":[ {"status" : "both"}, {"status" : "csv", "patch" : PATCH}]})
 		return cursor
 
 	##should always be passed in either status == "both_old" or "both"
 	@staticmethod
 	def get_bettable_set():
-		cursor = NitrogenDbClient.get_db().matches.find({"status" : "both", "is_test" : True})
+		cursor = NitrogenDbClient.get_db().matches.find({"status" : "both", "patch" : PATCH})
 		return cursor
 		
 	@staticmethod
 	def get_by_status(status):
-		cursor = NitrogenDbClient.get_db().matches.find({"status" : status})
+		cursor = NitrogenDbClient.get_db().matches.find({"status" : status, "patch" : PATCH})
 		return cursor
 
 	## passed in status, prints basic informatin about pro matches
@@ -229,7 +235,7 @@ class ProMatch:
 			if tournament_string in tournament.name:
 				t_id_requested = tournament.id
 				break
-		cursor = NitrogenDbClient.get_db().matches.find({"status" : status, "tournament_id" : t_id_requested})
+		cursor = NitrogenDbClient.get_db().matches.find({"status" : status, "tournament_id" : t_id_requested, "patch" : PATCH})
 		for d in cursor:
 			match = ProMatch.from_dict(d)
 			match.pprint()
@@ -240,7 +246,7 @@ class ProMatch:
 	## return all matches
 	@staticmethod
 	def get_all_matches():
-		cursor = NitrogenDbClient.get_db().matches.find()
+		cursor = NitrogenDbClient.get_db().matches.find({"patch" : PATCH})
 		return cursor
 
 	def get_latest_ML_T1(self):
@@ -265,28 +271,22 @@ class ProMatch:
 			##print "new"
 			self.id = self.create_match()
 
-	##invert teams
+	##invert team names and MLS when nitrogen.team1_name = csv.team2_name and vice versa
 	def invert(self):
 		assert (self.status == "both")
 		print "inverting"
 		temp = self.team1_name
 		self.team1_name = self.team2_name
 		self.team2_name = temp
-		ProMatch.invert_value(self.red_side)
-		temp = self.champs1
-		self.champs1 = self.champs2
-		self.champs2 = temp
-		ProMatch.invert_value(self.win)
-		ProMatch.invert_value(self.first_blood)
-		ProMatch.invert_value(self.kills_5)
-	
-	## 200 becomes 100 and 100 becomes 200
+		for o in self.odds:
+			temp = o["ML_T1"]
+			o["ML_T1"] = o["ML_T2"]
+			o["ML_T2"] = temp
+
 	@staticmethod
-	def invert_value(val):
-		if val == None:
-			return
-		elif val == 100:
-			val == 200
-		else:
-			val == 100
+	def print_statuses():
+		cursor = ProMatch.get_all_matches()
+		for d in cursor:
+			match = ProMatch.from_dict(d)
+			print match.status
 
