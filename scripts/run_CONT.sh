@@ -1,1 +1,1 @@
-python ~/betting/nitrogenspider/scrape.py "league-of-legends-continental-league"
+python ~/nitrogenspider/scrape.py "league-of-legends-continental-league"

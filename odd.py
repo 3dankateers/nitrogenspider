@@ -14,7 +14,7 @@ class Odd:
 		self.ML_T1 = ML_T1
 		self.ML_T2 = ML_T2
 		self.date_scraped = date_scraped
-	
+			
 	##constructor from Cursor
 	@classmethod
 	def from_dict(cls, c):

@@ -11,7 +11,7 @@ class Driver:
 
 	@staticmethod
 	def get_instance():
-		if Driver.driver == None:
+		if Driver.driver is None:
 			Driver.display = Display(visible=0, size=(1280, 1024))
 			Driver.display.start()
 			Driver.driver = webdriver.Firefox()
@@ -30,14 +30,18 @@ class Driver:
 			print "login button not found"
 		Driver.wait_until(login_button.is_enabled, 5)
 		try:
-			##time.sleep(5)
+			time.sleep(10)
 			login_button.click()
+			time.sleep(10)
+			##Driver.get_instance().save_screenshot('./screenshots/screen1.png')
 		except:
 			print "Error clicking login"
 	
 	@staticmethod
 	def logout():
+		##Driver.driver.quit()
 		Driver.driver.quit()
+		##Driver.driver.close()
 		Driver.display.stop()
 		##driver = Driver.get_instance()
 		##river.display.start()

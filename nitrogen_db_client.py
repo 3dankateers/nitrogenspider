@@ -18,15 +18,14 @@ class NitrogenDbClient:
 	@staticmethod
 	def get_client():
 		if NitrogenDbClient.client == None:
-			NitrogenDbClient.client = MongoClient("mongodb://54.191.167.105:27017")
+			NitrogenDbClient.client = MongoClient()
 			NitrogenDbClient.db = NitrogenDbClient.client.nitrogen
-			NitrogenDbClient.db.authenticate(NitrogenDbClient.MONGO_USERNAME, NitrogenDbClient.MONGO_PASSWORD, source='admin')
 		return NitrogenDbClient.client
 
 	@staticmethod
 	def get_db():
 		if NitrogenDbClient.client == None:
-			NitrogenDbClient.client = MongoClient("mongodb://54.191.167.105:27017")
+			NitrogenDbClient.client = MongoClient()
 			NitrogenDbClient.db = NitrogenDbClient.client.nitrogen
-			NitrogenDbClient.db.authenticate(NitrogenDbClient.MONGO_USERNAME, NitrogenDbClient.MONGO_PASSWORD, source='admin')
+			##NitrogenDbClient.db.authenticate(NitrogenDbClient.MONGO_USERNAME, NitrogenDbClient.MONGO_PASSWORD, source='admin')
 		return NitrogenDbClient.db
