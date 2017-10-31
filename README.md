@@ -10,4 +10,5 @@ Purpose: <br>
       Team names for each side<br>
       date grabbed<br><br>
       
-I don't think we care about historical odd changes
+I don't think we care about historical odd changes so new money lines would overwrite old money lines.
+Program should be scheduled every 5minutes? on a constantly running service.
